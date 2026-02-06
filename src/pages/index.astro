@@ -1,7 +1,9 @@
 ---
+import "../style/style.scss";
 
+const title = "HmmAI";
+const description = "An AI that responds with 'Huh'.";
 ---
-
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -9,9 +11,82 @@
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>{title}</title>
+		<meta name="title" content={title} />
+		<meta name="description" content={description} />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<div class="title">
+			<h1>HmmAI</h1>
+			<h2>Fastest <abbr title="Artificial Idiocy">AI</abbr> model in existence</h2>
+		</div>
+	<div class="conversation">
+		<div class="messages">
+		</div>
+		<form>
+			<label class="input">
+				<input type="text" placeholder="Type your message here..." />
+			</label>
+			<button type="submit" disabled>Send</button>
+			<button popovertarget="settings" popovertargetaction="show" type="button">?</button>
+		</form>
+	</div>
+	<div popover id="settings">
+		<div class="wrap">
+			<button class="exit" popovertarget="settings" popovertargetaction="hide" title="Exit menu">x</button>
+			<div class="information">
+				<p>
+					This is a joke website inspired by <a href="https://theonion.com/ai-chatbot-that-only-responds-huh-valued-at-200-billion/" target="_blank">this onion article</a>.
+					<br>
+					<br>
+					Check out <a href="https://yht.one" target="_blank">my website</a> while you're already here!
+				</p>
+			</div>
+		</div>
+
+	</div>
 	</body>
 </html>
+
+<script>
+	const messageForm = document.querySelector("form");
+	const messageInput = messageForm?.querySelector("input");
+	const sendButton: HTMLButtonElement | null | undefined = messageForm?.querySelector('button[type="submit"]');
+	const messagesContainer = document.querySelector(".messages");
+
+	messageInput?.addEventListener("input", () => {
+		if (!sendButton) return;
+		sendButton.disabled = !messageInput.value.trim();
+	});
+
+	messageForm?.addEventListener("submit", (event) => {
+		event.preventDefault();
+		if (!messageInput) return;
+		if (!sendButton) return;
+		const userMessage = messageInput?.value.trim();
+		if (!userMessage) return;
+		messageInput.disabled = true;
+		sendButton.disabled = true;
+		messageInput.value = "";
+		addMessage("You", userMessage);
+		const randomDelay = Math.floor(Math.random() * 1000) + 500;
+		setTimeout(() => {
+			addMessage("HmmAI", "Huh.");
+			messageInput.disabled = false;
+			messageInput.focus();
+		}, randomDelay);
+	});
+
+	function addMessage(sender: string, text: string) {
+		const messageElement = document.createElement("div");
+		messageElement.setAttribute("data-user", sender);
+		messageElement.textContent = text;
+		messagesContainer?.prepend(messageElement);
+	}
+
+</script>
