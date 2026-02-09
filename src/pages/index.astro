@@ -47,6 +47,16 @@ const description = "An AI that responds with 'Huh'.";
 					Check out <a href="https://yht.one" target="_blank">my website</a> while you're already here!
 				</p>
 			</div>
+			<div class="options">
+				<h3>Options</h3>
+				<label>
+					<span>Advanced responses (highly experimental)</span>
+					<input
+						type="checkbox"
+						name="advanced-responses"
+					/>
+				</label>
+			</div>
 		</div>
 
 	</div>
@@ -58,6 +68,19 @@ const description = "An AI that responds with 'Huh'.";
 	const messageInput = messageForm?.querySelector("input");
 	const sendButton: HTMLButtonElement | null | undefined = messageForm?.querySelector('button[type="submit"]');
 	const messagesContainer = document.querySelector(".messages");
+
+	const optionsContainer = document.querySelector(".options");
+	const advancedResponsesCheckbox = optionsContainer?.querySelector('input[name="advanced-responses"]') as HTMLInputElement | null;
+	advancedResponsesCheckbox?.addEventListener("change", () => {
+		toggleAdvancedResponses(advancedResponsesCheckbox.checked);
+	});
+
+	const defaultOptions = {
+		advancedResponses: false,
+	};
+
+	const options = getOptions();
+	toggleAdvancedResponses(options.advancedResponses)
 
 	messageInput?.addEventListener("input", () => {
 		if (!sendButton) return;
@@ -76,7 +99,7 @@ const description = "An AI that responds with 'Huh'.";
 		addMessage("You", userMessage);
 		const randomDelay = Math.floor(Math.random() * 1000) + 500;
 		setTimeout(() => {
-			addMessage("HmmAI", "Huh.");
+			addMessage("HmmAI", generateResponse());
 			messageInput.disabled = false;
 			messageInput.focus();
 		}, randomDelay);
@@ -87,6 +110,52 @@ const description = "An AI that responds with 'Huh'.";
 		messageElement.setAttribute("data-user", sender);
 		messageElement.textContent = text;
 		messagesContainer?.prepend(messageElement);
+	}
+
+	function generateResponse(): string {
+		const responses = ["Huh."]
+		if (options.advancedResponses) {
+			responses.push(
+				"Huh?",
+				"Huh!",
+				"Hmm.",
+				"Hmm?",
+				"Hmm!",
+				"Huh...?",
+				"Huh...!",
+				"That's crazy, huh?",
+				"Can you believe that, huh?",
+				"Wow, huh?",
+				"Unbelievable, huh?",
+				"Mind-blowing, huh?",
+				"Astounding, huh?",
+				"Incredible, huh?",
+				"Shocking, huh?",
+				"Surprising, huh?",
+				"Fascinating, huh?",
+				"Interesting, huh?",
+				"That's something, huh?",
+				"Well, huh.",
+				"Anyway, huh.",
+			);
+		}
+		return responses[Math.floor(Math.random() * responses.length)];
+	}
+
+	function getOptions() {
+		return localStorage.getItem("options") ? JSON.parse(localStorage.getItem("options") || "{}") : defaultOptions;
+	}
+
+	function saveOptions() {
+		localStorage.setItem("options", JSON.stringify(options));
+	}
+
+	function toggleAdvancedResponses(enabled: boolean) {
+		const advancedResponsesCheckbox = document.querySelector('.options input[name="advanced-responses"]') as HTMLInputElement | null;
+		if (!advancedResponsesCheckbox) return;
+		options["advancedResponses"] = advancedResponsesCheckbox.checked;
+		advancedResponsesCheckbox.checked = options.advancedResponses;
+		saveOptions();
 	}
 
 </script>
