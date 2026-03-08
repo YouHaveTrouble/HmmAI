@@ -53,14 +53,14 @@ const description = "An AI that responds with 'Huh'.";
 					<span>Advanced responses (highly experimental)</span>
 					<input
 						type="checkbox"
-						name="advanced-responses"
+						name="advancedResponses"
 					/>
 				</label>
 				<label>
 					<span>Thinking mode (Solves impossible problems)</span>
 					<input
 						type="checkbox"
-						name="thinking-mode"
+						name="thinkingMode"
 					/>
 				</label>
 			</div>
@@ -87,11 +87,11 @@ const description = "An AI that responds with 'Huh'.";
 	const messageTemplate = document.querySelector("#message-template") as HTMLTemplateElement | null;
 
 	const optionsContainer = document.querySelector(".options");
-	const advancedResponsesCheckbox = optionsContainer?.querySelector('input[name="advanced-responses"]') as HTMLInputElement | null;
+	const advancedResponsesCheckbox = optionsContainer?.querySelector('input[name="advancedResponses"]') as HTMLInputElement | null;
 	advancedResponsesCheckbox?.addEventListener("change", () => {
 		toggleAdvancedResponses(advancedResponsesCheckbox.checked);
 	});
-    const thinkingModeCheckbox = optionsContainer?.querySelector('input[name="thinking-mode"]') as HTMLInputElement | null;
+    const thinkingModeCheckbox = optionsContainer?.querySelector('input[name="thinkingMode"]') as HTMLInputElement | null;
     thinkingModeCheckbox?.addEventListener("change", () => {
 		toggleThinkingMode(thinkingModeCheckbox.checked);
 	});
@@ -101,9 +101,7 @@ const description = "An AI that responds with 'Huh'.";
         thinkingMode: false
 	};
 
-	const options = getOptions();
-	toggleAdvancedResponses(options.advancedResponses)
-    toggleThinkingMode(options.thinkingMode)
+	const options = initOptions();
 
 	messageInput?.addEventListener("input", () => {
 		if (!sendButton) return;
@@ -184,19 +182,34 @@ const description = "An AI that responds with 'Huh'.";
 	}
 
 	function toggleAdvancedResponses(enabled: boolean) {
-		const advancedResponsesCheckbox = document.querySelector('.options input[name="advanced-responses"]') as HTMLInputElement | null;
-		if (!advancedResponsesCheckbox) return;
-		options["advancedResponses"] = advancedResponsesCheckbox.checked;
-		advancedResponsesCheckbox.checked = options.advancedResponses;
+		options["advancedResponses"] = enabled;
 		saveOptions();
+		const advancedResponsesCheckbox = document.querySelector('.options input[name="advancedResponses"]') as HTMLInputElement | null;
+		if (!advancedResponsesCheckbox) return;
+		advancedResponsesCheckbox.checked = options.advancedResponses;
 	}
 
     function toggleThinkingMode(enabled: boolean) {
-        const checkbox = document.querySelector('.options input[name="thinking-mode"]') as HTMLInputElement | null;
+		options["thinkingMode"] = enabled;
+		saveOptions();
+        const checkbox = document.querySelector('.options input[name="thinkingMode"]') as HTMLInputElement | null;
         if (!checkbox) return;
-        options["thinkingMode"] = checkbox.checked;
         checkbox.checked = options.thinkingMode;
-        saveOptions();
     }
+
+	/**
+	 * Initializes the options UI based on the saved options.
+	 */
+	function initOptions() {
+		const options = getOptions();
+		for (const key in options) {
+			const value = options[key];
+			if (typeof value === "boolean") {
+				const checkbox = document.querySelector(`.options input[name="${key}"]`) as HTMLInputElement | null;
+				if (checkbox) checkbox.checked = value;
+			}
+		}
+		return options;
+	}
 
 </script>
