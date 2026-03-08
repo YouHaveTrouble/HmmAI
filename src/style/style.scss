@@ -45,7 +45,7 @@ body {
     padding-inline: 0.5rem;
     max-height: 100%;
 
-    div {
+    .message {
       display: flex;
       flex-direction: column;
       padding: 0.5rem;
@@ -54,9 +54,13 @@ body {
       border-radius: 0.25rem;
       position: relative;
 
-      &::before {
-        content: attr(data-user);
+      .sender {
         font-weight: bold;
+      }
+
+      .thinking-time {
+        font-size: 0.75rem;
+        color: #aaaaaa;
       }
     }
   }
