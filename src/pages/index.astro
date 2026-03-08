@@ -126,13 +126,13 @@ const description = "An AI that responds with 'Huh'.";
             if (options.thinkingMode && messagesContainer?.firstElementChild) {
                 messagesContainer.removeChild(messagesContainer.firstElementChild);
             }
-			addMessage("HmmAI", generateResponse(), randomDelay / 1000);
+			addMessage("HmmAI", generateResponse(), options.thinkingMode ? randomDelay / 1000 : undefined);
 			messageInput.disabled = false;
 			messageInput.focus();
 		}, randomDelay);
 	});
 
-	function addMessage(sender: string, text: string, thinkingTime?: number) {
+	function addMessage(sender: string, text: string, thinkingTime: number | undefined = undefined) {
 		if (!messageTemplate) return;
 		const messageElement = document.importNode(messageTemplate.content, true);
 		messageElement.querySelector('.sender')!.textContent = sender;
