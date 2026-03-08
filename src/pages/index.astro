@@ -67,6 +67,15 @@ const description = "An AI that responds with 'Huh'.";
 		</div>
 
 	</div>
+	<template id="message-template">
+		<div class="message">
+			<span class="header">
+				<span class="sender"></span>
+				<span class="thinking-time"></span>
+			</span>
+			<span class="content"></span>
+		</div>
+	</template>
 	</body>
 </html>
 
@@ -75,6 +84,7 @@ const description = "An AI that responds with 'Huh'.";
 	const messageInput = messageForm?.querySelector("input");
 	const sendButton: HTMLButtonElement | null | undefined = messageForm?.querySelector('button[type="submit"]');
 	const messagesContainer = document.querySelector(".messages");
+	const messageTemplate = document.querySelector("#message-template") as HTMLTemplateElement | null;
 
 	const optionsContainer = document.querySelector(".options");
 	const advancedResponsesCheckbox = optionsContainer?.querySelector('input[name="advanced-responses"]') as HTMLInputElement | null;
@@ -118,16 +128,20 @@ const description = "An AI that responds with 'Huh'.";
             if (options.thinkingMode && messagesContainer?.firstElementChild) {
                 messagesContainer.removeChild(messagesContainer.firstElementChild);
             }
-			addMessage(options.thinkingMode ? `HmmAI (Thought for ${(randomDelay / 1000).toFixed(2)} seconds)` : "HmmAI", generateResponse());
+			addMessage("HmmAI", generateResponse(), randomDelay / 1000);
 			messageInput.disabled = false;
 			messageInput.focus();
 		}, randomDelay);
 	});
 
-	function addMessage(sender: string, text: string) {
-		const messageElement = document.createElement("div");
-		messageElement.setAttribute("data-user", sender);
-		messageElement.textContent = text;
+	function addMessage(sender: string, text: string, thinkingTime?: number) {
+		if (!messageTemplate) return;
+		const messageElement = document.importNode(messageTemplate.content, true);
+		messageElement.querySelector('.sender')!.textContent = sender;
+		messageElement.querySelector('.content')!.textContent = text;
+		if (thinkingTime !== undefined) {
+			messageElement.querySelector('.thinking-time')!.textContent = `Thought for (${thinkingTime.toFixed(2)}s)`;
+		}
 		messagesContainer?.prepend(messageElement);
 	}
 
