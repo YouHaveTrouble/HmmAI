@@ -56,6 +56,13 @@ const description = "An AI that responds with 'Huh'.";
 						name="advanced-responses"
 					/>
 				</label>
+				<label>
+					<span>Thinking mode (Solves impossible problems)</span>
+					<input
+						type="checkbox"
+						name="thinking-mode"
+					/>
+				</label>
 			</div>
 		</div>
 
@@ -74,13 +81,19 @@ const description = "An AI that responds with 'Huh'.";
 	advancedResponsesCheckbox?.addEventListener("change", () => {
 		toggleAdvancedResponses(advancedResponsesCheckbox.checked);
 	});
+    const thinkingModeCheckbox = optionsContainer?.querySelector('input[name="thinking-mode"]') as HTMLInputElement | null;
+    thinkingModeCheckbox?.addEventListener("change", () => {
+		toggleThinkingMode(thinkingModeCheckbox.checked);
+	});
 
 	const defaultOptions = {
 		advancedResponses: false,
+        thinkingMode: false
 	};
 
 	const options = getOptions();
 	toggleAdvancedResponses(options.advancedResponses)
+    toggleThinkingMode(options.thinkingMode)
 
 	messageInput?.addEventListener("input", () => {
 		if (!sendButton) return;
@@ -97,9 +110,15 @@ const description = "An AI that responds with 'Huh'.";
 		sendButton.disabled = true;
 		messageInput.value = "";
 		addMessage("You", userMessage);
-		const randomDelay = Math.floor(Math.random() * 1000) + 500;
-		setTimeout(() => {
-			addMessage("HmmAI", generateResponse());
+        const randomDelay = options.thinkingMode ? Math.floor(Math.random() * 10000) + 5000 : Math.floor(Math.random() * 1000) + 500;
+		if (options.thinkingMode) {
+            setTimeout(() => addMessage("HmmAI", "Thinking..."), 500);
+        }
+        setTimeout(() => {
+            if (options.thinkingMode && messagesContainer?.firstElementChild) {
+                messagesContainer.removeChild(messagesContainer.firstElementChild);
+            }
+			addMessage(options.thinkingMode ? `HmmAI (Thought for ${(randomDelay / 1000).toFixed(2)} seconds)` : "HmmAI", generateResponse());
 			messageInput.disabled = false;
 			messageInput.focus();
 		}, randomDelay);
@@ -157,5 +176,13 @@ const description = "An AI that responds with 'Huh'.";
 		advancedResponsesCheckbox.checked = options.advancedResponses;
 		saveOptions();
 	}
+
+    function toggleThinkingMode(enabled: boolean) {
+        const checkbox = document.querySelector('.options input[name="thinking-mode"]') as HTMLInputElement | null;
+        if (!checkbox) return;
+        options["thinkingMode"] = checkbox.checked;
+        checkbox.checked = options.thinkingMode;
+        saveOptions();
+    }
 
 </script>
